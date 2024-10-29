@@ -32,7 +32,8 @@
         {
           "attributeName": "Offerneeded",
           "visibility": "WRITE",
-          "dataType": "Boolean"
+          "dataType": "Boolean",
+          "defaultValue": false
         }
       ],
       "onEntry": [
@@ -45,6 +46,7 @@
           "eventName": "WorkOrderDetailsEntered"
         }
       ],
+      "estimatedTime": "15 minutes",
       "notifications": [
         {
           "type": "email",
@@ -52,6 +54,13 @@
             "principaluser@example.com"
           ],
           "trigger": "onEntry"
+        },
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onExit"
         }
       ]
     },
@@ -76,7 +85,7 @@
           "attributeName": "OfferDocument",
           "visibility": "UPLOAD",
           "dataType": "Document",
-          "required": false
+          "required": true
         }
       ],
       "onEntry": [
@@ -89,7 +98,15 @@
           "eventName": "OfferUploaded"
         }
       ],
+      "estimatedTime": "15 minutes",
       "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onEntry"
+        },
         {
           "type": "email",
           "recipients": [
@@ -135,6 +152,13 @@
           "recipients": [
             "serviceprovider_phone_number"
           ],
+          "trigger": "onEntry"
+        },
+        {
+          "type": "sms",
+          "recipients": [
+            "serviceprovider_phone_number"
+          ],
           "trigger": "onExit"
         }
       ]
@@ -172,6 +196,7 @@
           "eventName": "WorkCompleted"
         }
       ],
+      "estimatedTime": "30 minutes",
       "notifications": [
         {
           "type": "email",
@@ -179,6 +204,13 @@
             "serviceprovider@example.com"
           ],
           "trigger": "onEntry"
+        },
+        {
+          "type": "email",
+          "recipients": [
+            "serviceprovider@example.com"
+          ],
+          "trigger": "onExit"
         }
       ]
     },
@@ -260,7 +292,15 @@
           "eventName": "InvoiceSubmitted"
         }
       ],
+      "estimatedTime": "15 minutes",
       "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onEntry"
+        },
         {
           "type": "email",
           "recipients": [
