@@ -1,221 +1,270 @@
 {
-    "id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
-    "name": "WorkOrderProcess",
-    "version": "1.1",
-    "description": "A process workflow for managing work orders, from creation to invoice submission.",
-    "createdBy": "WorkflowAdmin",
-    "createdDate": "2024-08-22",
-    "steps": [
-      {
-        "name": "CreateWorkOrder",
-        "type": "Manual",
-        "role": "PrincipalUser",
-        "data": [
-          {
-            "attributeName": "ServiceDescription",
-            "visibility": "WRITE",
-            "dataType": "String",
-            "required": true
-          },
-          {
-            "attributeName": "CustomerName",
-            "visibility": "WRITE",
-            "dataType": "String",
-            "required": true
-          },
-          {
-            "attributeName": "WorkOrderID",
-            "visibility": "READ",
-            "dataType": "UUID",
-            "defaultValue": "auto-generated"
-          },
-          {
-            "attributeName": "Offerneeded",
-            "visibility": "WRITE",
-            "dataType": "Boolean"
-          }
-        ],
-        "onEntry": [
-          {
-            "eventName": "ProviderSelected"
-          }
-        ],
-        "onExit": [
-          {
-            "eventName": "WorkOrderDetailsEntered"
-          }
-        ],
-        "notifications": [
-          {
-            "type": "email",
-            "recipients": ["principaluser@example.com"],
-            "trigger": "onEntry"
-          }
-        ]
-      },
-      {
-        "name": "UploadOffer",
-        "type": "Manual",
-        "role": "PrincipalUser",
-        "data": [
-          {
-            "attributeName": "Amount",
-            "visibility": "WRITE",
-            "dataType": "Decimal",
-            "required": true
-          },
-          {
-            "attributeName": "OfferStatus",
-            "visibility": "READ",
-            "dataType": "String",
-            "defaultValue": "pending"
-          },
-          {
-            "attributeName": "OfferDocument",
-            "visibility": "UPLOAD",
-            "dataType": "Document",
-            "required": false
-          }
-        ],
-        "onEntry": [
-          {
-            "eventName": "WorkOrderDetailsEntered"
-          }
-        ],
-        "onExit": [
-          {
-            "eventName": "OfferUploaded"
-          }
-        ],
-        "notifications": [
-          {
-            "type": "email",
-            "recipients": ["principaluser@example.com"],
-            "trigger": "onExit"
-          }
-        ]
-      },
-      {
-        "name": "AcceptOffer",
-        "type": "Manual",
-        "role": "PrincipalUser",
-        "data": [
-          {
-            "attributeName": "AcceptanceNotes",
-            "visibility": "WRITE",
-            "dataType": "String",
-            "required": false
-          },
-          {
-            "attributeName": "AcceptedDate",
-            "visibility": "READ",
-            "dataType": "DateTime",
-            "defaultValue": "currentTimestamp"
-          }
-        ],
-        "onEntry": [
-          {
-              "eventName": "OfferUploaded",
-              "condition": "(OfferStatus == 'uploaded')"
-          }
-        ],
-        "onExit": [
-          {
-            "eventName": "OfferAccepted"
-          }
-        ],
-        "estimatedTime": "30 minutes",
-        "notifications": [
-          {
-            "type": "sms",
-            "recipients": ["serviceprovider_phone_number"],
-            "trigger": "onExit"
-          }
-        ]
-      },
-      {
-        "name": "CompleteWorkOrder",
-        "type": "Manual",
-        "role": "ServiceProvider",
-        "data": [
-          {
-            "attributeName": "CompletionNotes",
-            "visibility": "WRITE",
-            "dataType": "String",
-            "required": true
-          },
-          {
-            "attributeName": "CompletionDate",
-            "visibility": "READ",
-            "dataType": "DateTime",
-            "defaultValue": "currentTimestamp"
-          }
-        ],
-        "onEntry": [
-          {
-            "eventName": "OfferAccepted",
-            "condition": "(OfferStatus == 'accepted')"
-          },
-          {
-              "eventName": "WorkOrderDetailsEntered",
-              "condition": "(Offerneeded == false)"
-          }
-        ],
-        "onExit": [
-          {
-            "eventName": "WorkCompleted"
-          }
-        ],
-        "notifications": [
-          {
-            "type": "email",
-            "recipients": ["serviceprovider@example.com"],
-            "trigger": "onEntry"
-          }
-        ]
-      },
-      {
-        "name": "SubmitInvoice",
-        "type": "Manual",
-        "role": "ServiceProvider",
-        "data": [
-          {
-            "attributeName": "InvoiceAmount",
-            "visibility": "WRITE",
-            "dataType": "Decimal",
-            "required": true
-          },
-          {
-            "attributeName": "InvoiceDocument",
-            "visibility": "UPLOAD",
-            "dataType": "Document",
-            "required": true
-          },
-          {
-            "attributeName": "InvoiceID",
-            "visibility": "READ",
-            "dataType": "UUID",
-            "defaultValue": "auto-generated"
-          }
-        ],
-        "onEntry": [
-          {
-            "eventName": "WorkCompleted"
-          }
-        ],
-        "onExit": [
-          {
-            "eventName": "InvoiceSubmitted"
-          }
-        ],
-        "notifications": [
-          {
-            "type": "email",
-            "recipients": ["principaluser@example.com"],
-            "trigger": "onExit"
-          }
-        ]
-      }
-    ]
-  }
-  
+  "id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+  "name": "WorkOrderProcess",
+  "version": "1.1",
+  "description": "A process workflow for managing work orders, from creation to invoice submission.",
+  "createdBy": "WorkflowAdmin",
+  "createdDate": "2024-08-22",
+  "steps": [
+    {
+      "name": "CreateWorkOrder",
+      "type": "Manual",
+      "role": "PrincipalUser",
+      "data": [
+        {
+          "attributeName": "ServiceDescription",
+          "visibility": "WRITE",
+          "dataType": "String",
+          "required": true
+        },
+        {
+          "attributeName": "CustomerName",
+          "visibility": "WRITE",
+          "dataType": "String",
+          "required": true
+        },
+        {
+          "attributeName": "WorkOrderID",
+          "visibility": "READ",
+          "dataType": "UUID",
+          "defaultValue": "auto-generated"
+        },
+        {
+          "attributeName": "Offerneeded",
+          "visibility": "WRITE",
+          "dataType": "Boolean"
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "ProviderSelected"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "WorkOrderDetailsEntered"
+        }
+      ],
+      "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onEntry"
+        }
+      ]
+    },
+    {
+      "name": "UploadOffer",
+      "type": "Manual",
+      "role": "PrincipalUser",
+      "data": [
+        {
+          "attributeName": "Amount",
+          "visibility": "WRITE",
+          "dataType": "Decimal",
+          "required": true
+        },
+        {
+          "attributeName": "OfferStatus",
+          "visibility": "READ",
+          "dataType": "String",
+          "defaultValue": "pending"
+        },
+        {
+          "attributeName": "OfferDocument",
+          "visibility": "UPLOAD",
+          "dataType": "Document",
+          "required": false
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "WorkOrderDetailsEntered"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "OfferUploaded"
+        }
+      ],
+      "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onExit"
+        }
+      ]
+    },
+    {
+      "name": "AcceptOffer",
+      "type": "Manual",
+      "role": "PrincipalUser",
+      "data": [
+        {
+          "attributeName": "AcceptanceNotes",
+          "visibility": "WRITE",
+          "dataType": "String",
+          "required": false
+        },
+        {
+          "attributeName": "AcceptedDate",
+          "visibility": "READ",
+          "dataType": "DateTime",
+          "defaultValue": "currentTimestamp"
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "OfferUploaded",
+          "condition": "(OfferStatus == 'uploaded')"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "OfferAccepted"
+        }
+      ],
+      "estimatedTime": "30 minutes",
+      "notifications": [
+        {
+          "type": "sms",
+          "recipients": [
+            "serviceprovider_phone_number"
+          ],
+          "trigger": "onExit"
+        }
+      ]
+    },
+    {
+      "name": "CompleteWorkOrder",
+      "type": "Manual",
+      "role": "ServiceProvider",
+      "data": [
+        {
+          "attributeName": "CompletionNotes",
+          "visibility": "WRITE",
+          "dataType": "String",
+          "required": true
+        },
+        {
+          "attributeName": "CompletionDate",
+          "visibility": "READ",
+          "dataType": "DateTime",
+          "defaultValue": "currentTimestamp"
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "OfferAccepted",
+          "condition": "(OfferStatus == 'accepted')"
+        },
+        {
+          "eventName": "WorkOrderDetailsEntered",
+          "condition": "(Offerneeded == false)"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "WorkCompleted"
+        }
+      ],
+      "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "serviceprovider@example.com"
+          ],
+          "trigger": "onEntry"
+        }
+      ]
+    },
+    {
+      "name": "UploadCompletionCertificate",
+      "type": "Manual",
+      "role": "ServiceUser",
+      "data": [
+        {
+          "attributeName": "CompletionCertificate",
+          "visibility": "UPLOAD",
+          "dataType": "Document",
+          "required": true
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "WorkCompleted"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "CompletionCertificateUploaded"
+        }
+      ],
+      "estimatedTime": "15 minutes",
+      "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "serviceuser@example.com"
+          ],
+          "trigger": "onEntry"
+        },
+        {
+          "type": "email",
+          "recipients": [
+            "serviceuser@example.com"
+          ],
+          "trigger": "onExit"
+        }
+      ]
+    },
+    {
+      "name": "SubmitInvoice",
+      "type": "Manual",
+      "role": "ServiceProvider",
+      "data": [
+        {
+          "attributeName": "InvoiceAmount",
+          "visibility": "WRITE",
+          "dataType": "Decimal",
+          "required": true
+        },
+        {
+          "attributeName": "InvoiceDocument",
+          "visibility": "UPLOAD",
+          "dataType": "Document",
+          "required": true
+        },
+        {
+          "attributeName": "InvoiceID",
+          "visibility": "READ",
+          "dataType": "UUID",
+          "defaultValue": "auto-generated"
+        }
+      ],
+      "onEntry": [
+        {
+          "eventName": "WorkCompleted"
+        }
+      ],
+      "onExit": [
+        {
+          "eventName": "InvoiceSubmitted"
+        }
+      ],
+      "notifications": [
+        {
+          "type": "email",
+          "recipients": [
+            "principaluser@example.com"
+          ],
+          "trigger": "onExit"
+        }
+      ]
+    }
+  ]
+}
